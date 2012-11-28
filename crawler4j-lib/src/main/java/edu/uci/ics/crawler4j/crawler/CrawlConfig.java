@@ -133,6 +133,21 @@ public class CrawlConfig {
      */
     private boolean stayOnDomain = false;
 
+
+    /*
+     * If the crawler needs to authenticate during the crawl, a single set
+     * of username/password can be provided (with Authentication scope ALL).
+     * Set this value to null to disable authentication.
+     */
+    private String username = null;
+
+    /*
+    * If the crawler needs to authenticate during the crawl, a single set
+    * of username/password can be provided (with Authentication scope ALL).
+    * Set this value to null to disable authentication.
+    */
+    private String password = null;
+
 	public CrawlConfig() {
 	}
 
@@ -386,6 +401,36 @@ public class CrawlConfig {
         return stayOnDomain;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * If the crawler needs to authenticate during the crawl, a single set
+     * of username/password can be provided (with Authentication scope ALL).
+     * Set this value to null to disable authentication.
+     *
+     * @param username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * If the crawler needs to authenticate during the crawl, a single set
+     * of username/password can be provided (with Authentication scope ALL).
+     * Set this value to null to disable authentication.
+     *
+     * @param password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     /**
      * If the crawler should remain on the domain of the provided seeds, this
      * parameters should be set to true.
@@ -418,6 +463,8 @@ public class CrawlConfig {
 		sb.append("Proxy port: " + getProxyPort() + "\n");
 		sb.append("Proxy username: " + getProxyUsername() + "\n");
 		sb.append("Proxy password: " + getProxyPassword() + "\n");
+		sb.append("Username: " + getUsername() + "\n");
+		sb.append("Password: " + getPassword() + "\n");
 		return sb.toString();
 	}
 

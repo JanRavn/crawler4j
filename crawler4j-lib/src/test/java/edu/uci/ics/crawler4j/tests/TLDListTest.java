@@ -1,62 +1,40 @@
 package edu.uci.ics.crawler4j.tests;
 
-import com.google.common.net.InternetDomainName;
-import edu.uci.ics.crawler4j.url.URLCanonicalizer;
-import edu.uci.ics.crawler4j.url.WebURL;
-import junit.framework.TestCase;
+import edu.uci.ics.crawler4j.url.TLDList;
+import org.junit.Test;
 
-public class TLDListTest extends TestCase {
+import static org.junit.Assert.*;
 
-    private WebURL webUrl = new WebURL();
-
-    private void setUrl(String url) {
-        webUrl.setURL(URLCanonicalizer.getCanonicalURL(url));
-    }
-
+public class TLDListTest {
+    @Test
     public void testTLD() {
-
-        setUrl("http://example.com");
-        assertEquals("example.com", webUrl.getDomain());
-        assertEquals("", webUrl.getSubDomain());
-
-        setUrl("http://test.example.com");
-        assertEquals("example.com", webUrl.getDomain());
-        assertEquals("test", webUrl.getSubDomain());
-
-        setUrl("http://test2.test.example.com");
-        assertEquals("example.com", webUrl.getDomain());
-        assertEquals("test2.test", webUrl.getSubDomain());
-
-        setUrl("http://test3.test2.test.example.com");
-        assertEquals("example.com", webUrl.getDomain());
-        assertEquals("test3.test2.test", webUrl.getSubDomain());
-
-        setUrl("http://www.example.ac.jp");
-        assertEquals("example.ac.jp", webUrl.getDomain());
-        assertEquals("www", webUrl.getSubDomain());
-
-        setUrl("http://example.ac.jp");
-        assertEquals("example.ac.jp", webUrl.getDomain());
-        assertEquals("", webUrl.getSubDomain());
-
-        setUrl("http://www.ravn.co.uk");
-        assertEquals("ravn.co.uk", webUrl.getDomain());
-        assertEquals("www", webUrl.getSubDomain());
+        assertEquals("example.com", TLDList.domain("example.com"));
+        assertEquals("example.com", TLDList.domain("test.example.com"));
+        assertEquals("example.com", TLDList.domain("test2.test.example.com"));
+        assertEquals("example.com", TLDList.domain("test3.test2.test.example.com"));
+        assertEquals("example.ac.jp", TLDList.domain("www.example.ac.jp"));
+        assertEquals("example.ac.jp", TLDList.domain("example.ac.jp"));
+        assertEquals("ravn.co.uk", TLDList.domain("www.ravn.co.uk"));
     }
 
-    public void testGuavaDomain() {
-        assertEquals("ravn.co.uk", InternetDomainName.from("www.ravn.co.uk").topPrivateDomain().name());
-        assertEquals("ravn.co.uk", InternetDomainName.from("mail.internal.ravn.co.uk").topPrivateDomain().name());
-        assertEquals("microsoft.com", InternetDomainName.from("www.microsoft.com").topPrivateDomain().name());
-        assertEquals("ravn.be", InternetDomainName.from("www.ravn.be").topPrivateDomain().name());
+    @Test
+    public void testIPAddress() {
+        assertEquals("", TLDList.domain("192.168.122.215"));
     }
 
-    public void testGuavaSubDomain() {
-        System.out.println(InternetDomainName.from("www.ravn.co.uk").parent());
-        assertEquals("ravn.co.uk", InternetDomainName.from("www.ravn.co.uk").topPrivateDomain().name());
-        assertEquals("ravn.co.uk", InternetDomainName.from("mail.internal.ravn.co.uk").topPrivateDomain().name());
-        assertEquals("microsoft.com", InternetDomainName.from("www.microsoft.com").topPrivateDomain().name());
-        assertEquals("ravn.be", InternetDomainName.from("www.ravn.be").topPrivateDomain().name());
+    @Test
+    public void testIllegalAddress() {
+        assertEquals("", TLDList.domain(""));
+        assertEquals("", TLDList.domain("$^%^&^&"));
     }
 
+    @Test
+    public void testNull() {
+        /// Not @Nullable => NullPointerException expected
+        try {
+            TLDList.domain(null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
 }
