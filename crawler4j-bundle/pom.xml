@@ -73,7 +73,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                            edu.uci.ics.crawler4j*;version=${project.version}
+                            edu.uci.ics.crawler4j.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.sun.tools.jconsole;resolution:=optional,
