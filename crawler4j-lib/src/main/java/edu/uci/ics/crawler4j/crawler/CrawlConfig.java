@@ -331,6 +331,7 @@ public class CrawlConfig {
 	/**
 	 * Max allowed size of a page. Pages larger than this size will not be
 	 * fetched.
+     * Set to a negative number to disable.
 	 */
 	public void setMaxDownloadSize(int maxDownloadSize) {
 		this.maxDownloadSize = maxDownloadSize;

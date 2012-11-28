@@ -17,14 +17,15 @@
 
 package edu.uci.ics.crawler4j.crawler;
 
+import edu.uci.ics.crawler4j.parser.ParseData;
+import edu.uci.ics.crawler4j.url.WebURL;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 
-import edu.uci.ics.crawler4j.parser.ParseData;
-import edu.uci.ics.crawler4j.url.WebURL;
-
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -67,78 +68,86 @@ public class Page {
      */
     protected ParseData parseData;
 
-	public Page(WebURL url) {
-		this.url = url;
-	}
+    public Page(WebURL url) {
+        this.url = url;
+    }
 
-	public WebURL getWebURL() {
-		return url;
-	}
+    public WebURL getWebURL() {
+        return url;
+    }
 
-	public void setWebURL(WebURL url) {
-		this.url = url;
-	}
+    public void setWebURL(WebURL url) {
+        this.url = url;
+    }
 
     /**
      * Loads the content of this page from a fetched
      * HttpEntity.
      */
-	public void load(HttpEntity entity) throws Exception {
+    public void load(HttpEntity entity) throws Exception {
 
-		contentType = null;
-		Header type = entity.getContentType();
-		if (type != null) {
-			contentType = type.getValue();
-		}
+        contentType = null;
+        Header type = entity.getContentType();
+        if (type != null) {
+            contentType = type.getValue();
+        }
 
-		contentEncoding = null;
-		Header encoding = entity.getContentEncoding();
-		if (encoding != null) {
-			contentEncoding = encoding.getValue();
-		}
+        contentEncoding = null;
+        Header encoding = entity.getContentEncoding();
+        if (encoding != null) {
+            contentEncoding = encoding.getValue();
+        }
 
-        Charset charset =  ContentType.getOrDefault(entity).getCharset();
+        Charset charset = ContentType.getOrDefault(entity).getCharset();
         if (charset != null) {
             contentCharset = charset.name();
         }
 
-		contentData = EntityUtils.toByteArray(entity);
+        contentData = EntityUtils.toByteArray(entity);
 
-	}
+    }
 
     /**
      * Returns the parsed data generated for this page by parsers
      */
-	public ParseData getParseData() {
-		return parseData;
-	}
+    public ParseData getParseData() {
+        return parseData;
+    }
 
-	public void setParseData(ParseData parseData) {
-		this.parseData = parseData;
-	}
+    public void setParseData(ParseData parseData) {
+        this.parseData = parseData;
+    }
 
     /**
      * Returns the content of this page in binary format.
      */
-	public byte[] getContentData() {
-		return contentData;
-	}
+    public byte[] getContentData() {
+        return contentData;
+    }
 
-	public void setContentData(byte[] contentData) {
-		this.contentData = contentData;
-	}
+    public void setContentData(byte[] contentData) {
+        this.contentData = contentData;
+    }
+
+    /**
+     * Returns the Content as an InputStream
+     * @return
+     */
+    public InputStream getContentDataStream() {
+        return new ByteArrayInputStream(contentData);
+    }
 
     /**
      * Returns the ContentType of this page.
      * For example: "text/html; charset=UTF-8"
      */
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
     /**
      * Returns the encoding of the content.
@@ -153,15 +162,23 @@ public class Page {
     }
 
     /**
+     * Returns the size of the page content.
+     * @return
+     */
+    public long getContentSize() {
+        return contentEncoding.length();
+    }
+
+    /**
      * Returns the charset of the content.
      * For example: "UTF-8"
      */
-	public String getContentCharset() {
-		return contentCharset;
-	}
+    public String getContentCharset() {
+        return contentCharset;
+    }
 
-	public void setContentCharset(String contentCharset) {
-		this.contentCharset = contentCharset;
-	}
+    public void setContentCharset(String contentCharset) {
+        this.contentCharset = contentCharset;
+    }
 
 }

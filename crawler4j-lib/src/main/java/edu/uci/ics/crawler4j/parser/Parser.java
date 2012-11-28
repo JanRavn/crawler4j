@@ -17,23 +17,20 @@
 
 package edu.uci.ics.crawler4j.parser;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.html.HtmlParser;
-
 import edu.uci.ics.crawler4j.crawler.Configurable;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.url.URLCanonicalizer;
 import edu.uci.ics.crawler4j.url.WebURL;
 import edu.uci.ics.crawler4j.util.Util;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
@@ -61,7 +58,7 @@ public class Parser extends Configurable {
 		} else if (Util.hasPlainTextContent(page.getContentType())) {
 			try {
 				TextParseData parseData = new TextParseData();
-				parseData.setTextContent(new String(page.getContentData(), page.getContentCharset()));
+                parseData.setTextContent(Util.toString(page.getContentDataStream(), page.getContentEncoding()));
 				page.setParseData(parseData);
 				return true;
 			} catch (Exception e) {
@@ -74,8 +71,7 @@ public class Parser extends Configurable {
 		HtmlContentHandler contentHandler = new HtmlContentHandler();
 		InputStream inputStream = null;
 		try {
-			inputStream = new ByteArrayInputStream(page.getContentData());
-			htmlParser.parse(inputStream, contentHandler, metadata, parseContext);
+			htmlParser.parse(page.getContentDataStream(), contentHandler, metadata, parseContext);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -130,18 +126,7 @@ public class Parser extends Configurable {
 		}
 
 		parseData.setOutgoingUrls(outgoingUrls);
-
-		try {
-			if (page.getContentCharset() == null) {
-				parseData.setHtml(new String(page.getContentData()));
-			} else {
-				parseData.setHtml(new String(page.getContentData(), page.getContentCharset()));
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return false;
-		}
-
+        parseData.setHtml(Util.toString(page.getContentDataStream(), page.getContentEncoding()));
 		page.setParseData(parseData);
 		return true;
 

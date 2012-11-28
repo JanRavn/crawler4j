@@ -20,8 +20,13 @@ package edu.uci.ics.crawler4j.fetcher;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IdleConnectionMonitorThread extends Thread {
+
+    protected static final Logger logger = LoggerFactory.getLogger(IdleConnectionMonitorThread.class);
     
     private final ClientConnectionManager connMgr;
     private volatile boolean shutdown;
@@ -42,6 +47,8 @@ public class IdleConnectionMonitorThread extends Thread {
                     // Optionally, close connections
                     // that have been idle longer than 30 sec
                     connMgr.closeIdleConnections(30, TimeUnit.SECONDS);
+
+                    logger.debug(((PoolingClientConnectionManager)connMgr).getTotalStats().toString());
                 }
             }
         } catch (InterruptedException ex) {

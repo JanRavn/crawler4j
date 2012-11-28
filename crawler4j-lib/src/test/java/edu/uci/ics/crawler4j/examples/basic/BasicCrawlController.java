@@ -40,13 +40,13 @@ public class BasicCrawlController {
 		 * crawlStorageFolder is a folder where intermediate crawl data is
 		 * stored.
 		 */
-		String crawlStorageFolder = args[0];
+		String crawlStorageFolder = "/tmp/crawler";
 
 		/*
 		 * numberOfCrawlers shows the number of concurrent threads that should
 		 * be initiated for crawling.
 		 */
-		int numberOfCrawlers = Integer.parseInt(args[1]);
+		int numberOfCrawlers = 10;
 
 		CrawlConfig config = new CrawlConfig();
 
@@ -56,19 +56,21 @@ public class BasicCrawlController {
 		 * Be polite: Make sure that we don't send more than 1 request per
 		 * second (1000 milliseconds between requests).
 		 */
-		config.setPolitenessDelay(1000);
+		config.setPolitenessDelay(0);
 
 		/*
 		 * You can set the maximum crawl depth here. The default value is -1 for
 		 * unlimited depth
 		 */
-		config.setMaxDepthOfCrawling(2);
+		config.setMaxDepthOfCrawling(-1);
 
 		/*
 		 * You can set the maximum number of pages to crawl. The default value
 		 * is -1 for unlimited number of pages
 		 */
-		config.setMaxPagesToFetch(10);
+		config.setMaxPagesToFetch(10000);
+
+        config.setMaxDownloadSize(-1);
 
 		/*
 		 * Do you need to set a proxy? If so, you can use:
@@ -87,7 +89,6 @@ public class BasicCrawlController {
 		 * rootFolder manually.
 		 */
 		config.setResumableCrawling(false);
-
 
         /*
          * Stay on domain forces the Crawler to stay on the domains of the different
@@ -114,7 +115,9 @@ public class BasicCrawlController {
 		 * which are found in these pages
 		 */
 
-		controller.addSeed("http://www.ravn.co.uk/");
+		controller.addSeed("http://mirrors.ukfast.co.uk/sites/ftp.apache.org/tomcat/tomcat-7/v7.0.33/bin/apache-tomcat-7.0.33.zip");
+		//controller.addSeed("http://www.ravn.co.uk/");
+
 
 		/*
 		 * Start the crawl. This is a blocking operation, meaning that your code

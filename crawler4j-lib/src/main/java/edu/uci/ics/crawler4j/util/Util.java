@@ -18,36 +18,41 @@
 package edu.uci.ics.crawler4j.util;
 
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
  */
 public class Util {
-	
-	public static byte[] long2ByteArray(long l) {
-		byte[] array = new byte[8];
-        int i, shift;                  
-        for(i = 0, shift = 56; i < 8; i++, shift -= 8) {
-        	array[i] = (byte)(0xFF & (l >> shift));
+
+    public static byte[] long2ByteArray(long l) {
+        byte[] array = new byte[8];
+        int i, shift;
+        for (i = 0, shift = 56; i < 8; i++, shift -= 8) {
+            array[i] = (byte) (0xFF & (l >> shift));
         }
         return array;
     }
-    
+
     public static byte[] int2ByteArray(int value) {
-    	byte[] b = new byte[4];
+        byte[] b = new byte[4];
         for (int i = 0; i < 4; i++) {
             int offset = (3 - i) * 8;
             b[i] = (byte) ((value >>> offset) & 0xFF);
         }
         return b;
     }
-    
+
     public static void putIntInByteArray(int value, byte[] buf, int offset) {
         for (int i = 0; i < 4; i++) {
             int valueOffset = (3 - i) * 8;
             buf[offset + i] = (byte) ((value >>> valueOffset) & 0xFF);
         }
     }
-    
+
     public static int byteArray2Int(byte[] b) {
         int value = 0;
         for (int i = 0; i < 4; i++) {
@@ -56,7 +61,7 @@ public class Util {
         }
         return value;
     }
-    
+
     public static long byteArray2Long(byte[] b) {
         int value = 0;
         for (int i = 0; i < 8; i++) {
@@ -67,22 +72,41 @@ public class Util {
     }
 
     public static boolean hasBinaryContent(String contentType) {
-		if (contentType != null) {
-			String typeStr = contentType.toLowerCase();
-			if (typeStr.contains("image") || typeStr.contains("audio") || typeStr.contains("video") || typeStr.contains("application")) {
-				return true;
-			}
-		}
-		return false;
+        if (contentType != null) {
+            String typeStr = contentType.toLowerCase();
+            if (typeStr.contains("image") || typeStr.contains("audio") || typeStr.contains("video") || typeStr.contains("application")) {
+                return true;
+            }
+        }
+        return false;
     }
-    
+
     public static boolean hasPlainTextContent(String contentType) {
-		if (contentType != null) {
-			String typeStr = contentType.toLowerCase();
-			if (typeStr.contains("text/plain")) {				
-				return true;
-			}
-		}
-		return false;
+        if (contentType != null) {
+            String typeStr = contentType.toLowerCase();
+            if (typeStr.contains("text/plain")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Reads the provided InputStream and returns it as a String.
+     * In case no encoding is provided, UTF-8 will be used as the default.
+     *
+     * @param is
+     * @param encoding
+     * @return
+     */
+    public static String toString(InputStream is, String encoding) {
+        if (encoding == null) {
+            encoding = "UTF-8";
+        }
+        try {
+            return IOUtils.toString(is, encoding);
+        } catch (IOException e) {
+        }
+        return null;
     }
 }

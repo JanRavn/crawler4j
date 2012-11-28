@@ -50,6 +50,12 @@
             <version>1.5</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- HTTP Components -->
         <dependency>

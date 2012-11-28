@@ -173,6 +173,22 @@ public class WebCrawler implements Runnable {
         return null;
     }
 
+
+    /**
+     * Creates a new Page for the provided WebURL and PageFetchResults.
+     * The default implementation returns a Page object which stores the fetched data
+     * in memory.
+     * Other WebCrawler implementations could override this method to provide other
+     * Page implementations.
+     *
+     * @param url
+     * @param fetchResult
+     * @return
+     */
+    protected Page createPage(WebURL url, PageFetchResult fetchResult) {
+        return new Page(url);
+    }
+
     public void run() {
         onStart();
         while (true) {
@@ -302,7 +318,9 @@ public class WebCrawler implements Runnable {
                 curURL.setDocid(docIdServer.getNewDocID(fetchResult.getFetchedUrl()));
             }
 
-            Page page = new Page(curURL);
+            // Create a Page object for the fetched URL
+            Page page = createPage(curURL, fetchResult);
+
             int docid = curURL.getDocid();
             if (fetchResult.fetchContent(page) && parser.parse(page, curURL.getURL())) {
                 ParseData parseData = page.getParseData();
