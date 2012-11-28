@@ -119,17 +119,6 @@ public class Page {
     }
 
     /**
-     * Returns the content of this page in binary format.
-     */
-    public byte[] getContentData() {
-        return contentData;
-    }
-
-    public void setContentData(byte[] contentData) {
-        this.contentData = contentData;
-    }
-
-    /**
      * Returns the Content as an InputStream
      * @return
      */
