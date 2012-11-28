@@ -69,6 +69,7 @@ public class CrawlController extends Configurable {
     protected RobotstxtServer robotstxtServer;
     protected Frontier frontier;
     protected DocIDServer docIdServer;
+    protected DomainManager domainManager;
 
     protected final Object waitingLock = new Object();
 
@@ -107,6 +108,9 @@ public class CrawlController extends Configurable {
 
         this.pageFetcher = pageFetcher;
         this.robotstxtServer = robotstxtServer;
+
+        // Init the DomainManager - used for the stayOnDomain config
+        this.domainManager = new DomainManager();
 
         finished = false;
         shuttingDown = false;
@@ -364,6 +368,10 @@ public class CrawlController extends Configurable {
         if (!robotstxtServer.allows(webUrl)) {
             logger.info("Robots.txt does not allow this seed: " + pageUrl);
         } else {
+            // Register the domain with the domain manager
+            domainManager.registerDomain(webUrl.getDomain());
+
+            // Schedule the domain for spidering
             frontier.schedule(webUrl);
         }
     }
@@ -440,6 +448,10 @@ public class CrawlController extends Configurable {
 
     public boolean isShuttingDown() {
         return shuttingDown;
+    }
+
+    public DomainManager getDomainManager() {
+        return domainManager;
     }
 
     /**

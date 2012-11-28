@@ -44,6 +44,14 @@ public class WebURL implements Serializable {
     private String anchor;
     private byte priority;
 
+
+    public WebURL() {
+    }
+
+    public WebURL(String url) {
+        setURL(url);
+    }
+
     /**
      * Returns the unique document id assigned to this Url.
      */

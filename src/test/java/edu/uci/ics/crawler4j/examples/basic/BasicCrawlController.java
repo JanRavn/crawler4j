@@ -68,7 +68,7 @@ public class BasicCrawlController {
 		 * You can set the maximum number of pages to crawl. The default value
 		 * is -1 for unlimited number of pages
 		 */
-		config.setMaxPagesToFetch(1000);
+		config.setMaxPagesToFetch(10);
 
 		/*
 		 * Do you need to set a proxy? If so, you can use:
@@ -88,6 +88,18 @@ public class BasicCrawlController {
 		 */
 		config.setResumableCrawling(false);
 
+
+        /*
+         * Stay on domain forces the Crawler to stay on the domains of the different
+         * seeds URLs which were provided.
+         */
+        config.setStayOnDomain(true);
+
+        /*
+         * Fetch binary files as well.
+         */
+        config.setIncludeBinaryContentInCrawling(true);
+
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
@@ -102,9 +114,7 @@ public class BasicCrawlController {
 		 * which are found in these pages
 		 */
 
-		controller.addSeed("http://www.ics.uci.edu/");
-		controller.addSeed("http://www.ics.uci.edu/~lopes/");
-		controller.addSeed("http://www.ics.uci.edu/~welling/");
+		controller.addSeed("http://www.ravn.co.uk/");
 
 		/*
 		 * Start the crawl. This is a blocking operation, meaning that your code

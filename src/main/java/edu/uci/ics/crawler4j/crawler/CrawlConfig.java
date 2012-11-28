@@ -127,12 +127,18 @@ public class CrawlConfig {
 	 */
 	private String proxyPassword = null;
 
+    /**
+     * If the crawler should remain on the domain of the provided seeds, this
+     * parameters should be set to true.
+     */
+    private boolean stayOnDomain = false;
+
 	public CrawlConfig() {
 	}
 
 	/**
 	 * Validates the configs specified by this instance.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void validate() throws Exception {
@@ -218,7 +224,7 @@ public class CrawlConfig {
 	/**
 	 * Politeness delay in milliseconds (delay between sending two requests to
 	 * the same host).
-	 * 
+	 *
 	 * @param politenessDelay
 	 *            the delay in milliseconds.
 	 */
@@ -376,7 +382,21 @@ public class CrawlConfig {
 		this.proxyPassword = proxyPassword;
 	}
 
-	@Override
+    public boolean isStayOnDomain() {
+        return stayOnDomain;
+    }
+
+    /**
+     * If the crawler should remain on the domain of the provided seeds, this
+     * parameters should be set to true.
+     *
+     * @param stayOnDomain if true the crawler will remain on the seed domains.
+     */
+    public void setStayOnDomain(boolean stayOnDomain) {
+        this.stayOnDomain = stayOnDomain;
+    }
+
+    @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Crawl storage folder: " + getCrawlStorageFolder() + "\n");
@@ -393,6 +413,7 @@ public class CrawlConfig {
 		sb.append("Max outgoing links to follow: " + getMaxOutgoingLinksToFollow() + "\n");
 		sb.append("Max download size: " + getMaxDownloadSize() + "\n");
 		sb.append("Should follow redirects?: " + isFollowRedirects() + "\n");
+		sb.append("Stay on domain?: " + isStayOnDomain() + "\n");
 		sb.append("Proxy host: " + getProxyHost() + "\n");
 		sb.append("Proxy port: " + getProxyPort() + "\n");
 		sb.append("Proxy username: " + getProxyUsername() + "\n");
