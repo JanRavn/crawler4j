@@ -19,10 +19,13 @@ package edu.uci.ics.crawler4j.crawler;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 
 import edu.uci.ics.crawler4j.parser.ParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+
+import java.nio.charset.Charset;
 
 /**
  * This class contains the data for a fetched and parsed page.
@@ -94,7 +97,10 @@ public class Page {
 			contentEncoding = encoding.getValue();
 		}
 
-		contentCharset = EntityUtils.getContentCharSet(entity);
+        Charset charset =  ContentType.getOrDefault(entity).getCharset();
+        if (charset != null) {
+            contentCharset = charset.name();
+        }
 
 		contentData = EntityUtils.toByteArray(entity);
 

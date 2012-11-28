@@ -1,6 +1,7 @@
 package edu.uci.ics.crawler4j.crawler;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Ravn Systems
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger;
  * @author Jan Van Hoecke
  */
 public class DefaultWebCrawlerFactory<T extends WebCrawler> implements WebCrawlerFactory {
-    private static final Logger logger = Logger.getLogger(CrawlController.class.getName());
+    protected static final Logger logger = LoggerFactory.getLogger(DefaultWebCrawlerFactory.class);
 
     private final Class<T> clazz;
 

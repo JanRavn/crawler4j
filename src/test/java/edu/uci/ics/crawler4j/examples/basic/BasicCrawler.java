@@ -19,61 +19,42 @@ package edu.uci.ics.crawler4j.examples.basic;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
-import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
  */
 public class BasicCrawler extends WebCrawler {
+    protected static final Logger logger = LoggerFactory.getLogger(BasicCrawler.class);
 
-	private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|bmp|gif|jpe?g" + "|png|tiff?|mid|mp2|mp3|mp4"
-			+ "|wav|avi|mov|mpeg|ram|m4v|pdf" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+    private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|bmp|gif|jpe?g" + "|png|tiff?|mid|mp2|mp3|mp4"
+            + "|wav|avi|mov|mpeg|ram|m4v|pdf" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
 
-	/**
-	 * You should implement this function to specify whether the given url
-	 * should be crawled or not (based on your crawling logic).
-	 */
-	@Override
-	public boolean shouldVisit(WebURL url) {
-		String href = url.getURL().toLowerCase();
-		return !FILTERS.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
-	}
+    /**
+     * You should implement this function to specify whether the given url
+     * should be crawled or not (based on your crawling logic).
+     */
+    @Override
+    public boolean shouldVisit(WebURL url) {
+        if (FILTERS.matcher(url.getURL()).matches()) {
+            logger.debug("Rejecting URL, does not match URL filter: " + url.toString());
+            return false;
+        } else {
+            logger.debug("Accepting URL: " + url.toString());
+            return true;
+        }
+    }
 
-	/**
-	 * This function is called when a page is fetched and ready to be processed
-	 * by your program.
-	 */
-	@Override
-	public void visit(Page page) {
-		int docid = page.getWebURL().getDocid();
-		String url = page.getWebURL().getURL();
-		String domain = page.getWebURL().getDomain();
-		String path = page.getWebURL().getPath();
-		String subDomain = page.getWebURL().getSubDomain();
-		String parentUrl = page.getWebURL().getParentUrl();
-
-		System.out.println("Docid: " + docid);
-		System.out.println("URL: " + url);
-		System.out.println("Domain: '" + domain + "'");
-		System.out.println("Sub-domain: '" + subDomain + "'");
-		System.out.println("Path: '" + path + "'");
-		System.out.println("Parent page: " + parentUrl);
-
-		if (page.getParseData() instanceof HtmlParseData) {
-			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-			String text = htmlParseData.getText();
-			String html = htmlParseData.getHtml();
-			List<WebURL> links = htmlParseData.getOutgoingUrls();
-
-			System.out.println("Text length: " + text.length());
-			System.out.println("Html length: " + html.length());
-			System.out.println("Number of outgoing links: " + links.size());
-		}
-
-		System.out.println("=============");
-	}
+    /**
+     * This function is called when a page is fetched and ready to be processed
+     * by your program.
+     */
+    @Override
+    public void visit(Page page) {
+        logger.info("Crawled URL: " + page.getWebURL().getURL());
+    }
 }
