@@ -73,7 +73,7 @@ public class Page {
      * Request data contains information specific to the
      * request which was made to retrieve this page.
      */
-    protected RequestData requestData;
+    protected RequestData requestData = new RequestData();
 
 
     public Page(WebURL url) {
