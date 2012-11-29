@@ -1,10 +1,12 @@
-package edu.uci.ics.crawler4j.crawler;
+package edu.uci.ics.crawler4j.crawler.deferred;
 
+import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.url.WebURL;
+import edu.uci.ics.crawler4j.util.DeferredDataBuffer;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.util.EntityUtils;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -17,14 +19,14 @@ import java.nio.charset.Charset;
  * @author Jan Van Hoecke
  */
 public class DeferredPage extends Page {
-
-    // Config settings
-    private String tempPath;
-
     // State information
+    private DeferredDataBuffer buffer;
+    private int size = 0;
 
-    public DeferredPage(WebURL url) {
+
+    public DeferredPage(WebURL url, DeferredDataBuffer buffer) {
         super(url);
+        this.buffer = buffer;
     }
 
     @Override
@@ -46,13 +48,17 @@ public class DeferredPage extends Page {
             contentCharset = charset.name();
         }
 
-        // Copy the files
-
-        contentData = EntityUtils.toByteArray(entity);
+        // Copy content to the buffer
+        IOUtils.copy(entity.getContent(), buffer.getOutputStream());
     }
 
     @Override
     public InputStream getContentDataStream() {
-        return super.getContentDataStream();
+        return buffer.getInputStream();
+    }
+
+    @Override
+    public long getContentSize() {
+        return size;
     }
 }

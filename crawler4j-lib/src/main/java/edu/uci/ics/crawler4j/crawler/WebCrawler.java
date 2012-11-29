@@ -322,6 +322,7 @@ public class WebCrawler implements Runnable {
             Page page = createPage(curURL, fetchResult);
 
             int docid = curURL.getDocid();
+
             if (fetchResult.fetchContent(page) && parser.parse(page, curURL.getURL())) {
                 ParseData parseData = page.getParseData();
                 if (parseData instanceof HtmlParseData) {
