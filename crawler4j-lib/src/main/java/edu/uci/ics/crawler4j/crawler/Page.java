@@ -17,6 +17,7 @@
 
 package edu.uci.ics.crawler4j.crawler;
 
+import edu.uci.ics.crawler4j.fetcher.RequestData;
 import edu.uci.ics.crawler4j.parser.ParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.apache.http.Header;
@@ -68,6 +69,13 @@ public class Page {
      */
     protected ParseData parseData;
 
+    /**
+     * Request data contains information specific to the
+     * request which was made to retrieve this page.
+     */
+    protected RequestData requestData;
+
+
     public Page(WebURL url) {
         this.url = url;
     }
@@ -104,7 +112,6 @@ public class Page {
         }
 
         contentData = EntityUtils.toByteArray(entity);
-
     }
 
     /**
@@ -120,6 +127,7 @@ public class Page {
 
     /**
      * Returns the Content as an InputStream
+     *
      * @return
      */
     public InputStream getContentDataStream() {
@@ -152,6 +160,7 @@ public class Page {
 
     /**
      * Returns the size of the page content.
+     *
      * @return
      */
     public long getContentSize() {
@@ -170,4 +179,15 @@ public class Page {
         this.contentCharset = contentCharset;
     }
 
+    /**
+     * Request data contains information specific to the
+     * request which was made to retrieve this page.
+     */
+    public RequestData getRequestData() {
+        return requestData;
+    }
+
+    public void setRequestData(RequestData requestData) {
+        this.requestData = requestData;
+    }
 }

@@ -167,6 +167,11 @@ public class PageFetcher extends Configurable {
             HttpResponse response = httpClient.execute(get);
             fetchResult.setEntity(response.getEntity());
 
+            // Setting all headers
+            for (Header header : response.getAllHeaders()) {
+                fetchResult.addHeader(header.getName(), header.getValue());
+            }
+
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
                 if (statusCode != HttpStatus.SC_NOT_FOUND) {
