@@ -270,6 +270,7 @@ public class CrawlController extends Configurable {
                 }
             });
 
+            monitorThread.setName("CrawlerMonitor");
             monitorThread.start();
 
             if (isBlocking) {
