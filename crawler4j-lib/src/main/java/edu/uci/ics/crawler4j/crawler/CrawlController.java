@@ -72,6 +72,8 @@ public class CrawlController extends Configurable {
     protected DocIDServer docIdServer;
     protected DomainManager domainManager;
 
+    private Environment env;
+
     protected final Object waitingLock = new Object();
 
     public CrawlController(CrawlConfig config, PageFetcher pageFetcher, RobotstxtServer robotstxtServer)
@@ -103,7 +105,7 @@ public class CrawlController extends Configurable {
             IO.deleteFolderContents(envHome);
         }
 
-        Environment env = new Environment(envHome, envConfig);
+        env = new Environment(envHome, envConfig);
         docIdServer = new DocIDServer(env, config);
         frontier = new Frontier(env, config, docIdServer);
 
@@ -258,6 +260,8 @@ public class CrawlController extends Configurable {
 
                                         finished = true;
                                         waitingLock.notifyAll();
+
+                                        env.close();
 
                                         return;
                                     }
