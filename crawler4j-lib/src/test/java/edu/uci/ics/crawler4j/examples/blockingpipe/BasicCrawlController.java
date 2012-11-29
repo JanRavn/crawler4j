@@ -19,6 +19,8 @@ package edu.uci.ics.crawler4j.examples.blockingpipe;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.deferred.MemoryEfficientPageFactory;
+import edu.uci.ics.crawler4j.crawler.wrappers.CustomPageFactoryWebCrawlerFactory;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
@@ -121,7 +123,10 @@ public class BasicCrawlController {
          * Use a factory to create MemoryEfficientWebCrawlers
          */
         DeferredDataBufferProvider provider = new DeferredDataBufferProvider("/tmp/crawler/data", 1024);
-        CrawlerFactory factory = new CrawlerFactory(provider, consumer.getPipeline());
+        MemoryEfficientPageFactory pageFactory = new MemoryEfficientPageFactory(provider);
+
+        CrawlerFactory wrappedFactory = new CrawlerFactory(consumer.getPipeline());
+        CustomPageFactoryWebCrawlerFactory factory = new CustomPageFactoryWebCrawlerFactory(wrappedFactory, pageFactory);
 
 
         /**

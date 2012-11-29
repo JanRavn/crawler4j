@@ -19,6 +19,9 @@ package edu.uci.ics.crawler4j.examples.deferred;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.DefaultWebCrawlerFactory;
+import edu.uci.ics.crawler4j.crawler.deferred.MemoryEfficientPageFactory;
+import edu.uci.ics.crawler4j.crawler.wrappers.CustomPageFactoryWebCrawlerFactory;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
@@ -40,7 +43,7 @@ public class BasicCrawlController {
          * numberOfCrawlers shows the number of concurrent threads that should
          * be initiated for crawling.
          */
-        int numberOfCrawlers = 1;
+        int numberOfCrawlers = 10;
 
         CrawlConfig config = new CrawlConfig();
 
@@ -110,14 +113,18 @@ public class BasicCrawlController {
          */
 
         //controller.addSeed("http://mirrors.ukfast.co.uk/sites/ftp.apache.org/tomcat/tomcat-7/v7.0.33/bin/apache-tomcat-7.0.33.zip");
-        controller.addSeed("http://www.ravn.co.uk/");
+        controller.addSeed("http://en.wikipedia.org/");
+        //controller.addSeed("http://www.ravn.co.uk/");
 
         /**
-         * Use a factory to create MemoryEfficientWebCrawlers
+         * Use a factory to create memory efficient web crawlers.
+         * Wrap it with a Custom
          */
         DeferredDataBufferProvider provider = new DeferredDataBufferProvider("/tmp/crawler/data", 1024);
-        CrawlerFactory factory = new CrawlerFactory(provider);
+        MemoryEfficientPageFactory pageFactory = new MemoryEfficientPageFactory(provider);
 
+        DefaultWebCrawlerFactory<BasicCrawler> defaultFactory = new DefaultWebCrawlerFactory<BasicCrawler>(BasicCrawler.class);
+        CustomPageFactoryWebCrawlerFactory<BasicCrawler> factory = new CustomPageFactoryWebCrawlerFactory<BasicCrawler>(defaultFactory, pageFactory);
 
         /**
          * Start the crawl. This is a blocking operation, meaning that your code

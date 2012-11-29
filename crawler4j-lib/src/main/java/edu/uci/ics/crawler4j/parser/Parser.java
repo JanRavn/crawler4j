@@ -59,7 +59,7 @@ public class Parser extends Configurable {
         } else if (Util.hasPlainTextContent(page.getContentType())) {
             try {
                 TextParseData parseData = new TextParseData();
-                parseData.setTextContent(Util.toString(page.getContentDataStream(), page.getContentEncoding()));
+                parseData.setTextContent(Util.toString(page.getContentDataStream(), page.getContentCharset()));
                 page.setParseData(parseData);
                 return true;
             } catch (Exception e) {
@@ -127,7 +127,7 @@ public class Parser extends Configurable {
         }
 
         parseData.setOutgoingUrls(outgoingUrls);
-        parseData.setHtml(Util.toString(page.getContentDataStream(), page.getContentEncoding()));
+        parseData.setHtml(Util.toString(page.getContentDataStream(), page.getContentCharset()));
         page.setParseData(parseData);
         return true;
 

@@ -57,6 +57,12 @@ public class WebCrawler implements Runnable {
     protected CrawlController myController;
 
     /**
+     * The Page factory creates new Page object on request. The factory can
+     * be overridden in order to provide different Page implementations.
+     */
+    protected PageFactory pageFactory = new DefaultPageFactory();
+
+    /**
      * The thread within which this crawler instance is running.
      */
     private Thread myThread;
@@ -171,22 +177,6 @@ public class WebCrawler implements Runnable {
      */
     public Object getMyLocalData() {
         return null;
-    }
-
-
-    /**
-     * Creates a new Page for the provided WebURL and PageFetchResults.
-     * The default implementation returns a Page object which stores the fetched data
-     * in memory.
-     * Other WebCrawler implementations could override this method to provide other
-     * Page implementations.
-     *
-     * @param url
-     * @param fetchResult
-     * @return
-     */
-    protected Page createPage(WebURL url, PageFetchResult fetchResult) {
-        return new Page(url);
     }
 
     public void run() {
@@ -319,7 +309,7 @@ public class WebCrawler implements Runnable {
             }
 
             // Create a Page object for the fetched URL
-            Page page = createPage(curURL, fetchResult);
+            Page page = pageFactory.create(curURL, fetchResult);
 
             int docid = curURL.getDocid();
 
@@ -374,4 +364,11 @@ public class WebCrawler implements Runnable {
         return !isWaitingForNewURLs;
     }
 
+    public PageFactory getPageFactory() {
+        return pageFactory;
+    }
+
+    public void setPageFactory(PageFactory pageFactory) {
+        this.pageFactory = pageFactory;
+    }
 }

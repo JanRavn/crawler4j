@@ -87,7 +87,7 @@ public class RobotstxtServer {
 				fetchResult.fetchContent(page);
 				if (Util.hasPlainTextContent(page.getContentType())) {
 					try {
-                        String content = Util.toString(page.getContentDataStream(), page.getContentEncoding());
+                        String content = Util.toString(page.getContentDataStream(), page.getContentCharset());
 						directives = RobotstxtParser.parse(content, config.getUserAgentName());
 					} catch (Exception e) {
 						e.printStackTrace();

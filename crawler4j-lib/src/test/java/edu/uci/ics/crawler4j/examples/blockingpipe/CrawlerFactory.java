@@ -1,9 +1,7 @@
 package edu.uci.ics.crawler4j.examples.blockingpipe;
 
 import edu.uci.ics.crawler4j.crawler.Page;
-import edu.uci.ics.crawler4j.crawler.deferred.MemoryEfficientWebCrawler;
-import edu.uci.ics.crawler4j.crawler.deferred.MemoryEfficientWebCrawlerFactory;
-import edu.uci.ics.crawler4j.util.DeferredDataBufferProvider;
+import edu.uci.ics.crawler4j.crawler.WebCrawlerFactory;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -14,16 +12,16 @@ import java.util.concurrent.BlockingQueue;
  *
  * @author Jan Van Hoecke
  */
-public class CrawlerFactory extends MemoryEfficientWebCrawlerFactory {
+public class CrawlerFactory implements WebCrawlerFactory<BasicCrawler> {
     private BlockingQueue<Page> pipeline;
-    public CrawlerFactory(DeferredDataBufferProvider dataBufferProvider, BlockingQueue<Page> pipeline) {
-        super(dataBufferProvider);
+
+    public CrawlerFactory(BlockingQueue<Page> pipeline) {
         this.pipeline = pipeline;
     }
 
     @Override
-    public MemoryEfficientWebCrawler create() {
-        BasicCrawler crawler = new BasicCrawler(dataBufferProvider, pipeline);
+    public BasicCrawler create() {
+        BasicCrawler crawler = new BasicCrawler(pipeline);
         return crawler;
     }
 }

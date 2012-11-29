@@ -18,9 +18,8 @@
 package edu.uci.ics.crawler4j.examples.blockingpipe;
 
 import edu.uci.ics.crawler4j.crawler.Page;
-import edu.uci.ics.crawler4j.crawler.deferred.MemoryEfficientWebCrawler;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.url.WebURL;
-import edu.uci.ics.crawler4j.util.DeferredDataBufferProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * @author Jan Van Hoecke
  */
-public class BasicCrawler extends MemoryEfficientWebCrawler {
+public class BasicCrawler extends WebCrawler {
     protected static final Logger logger = LoggerFactory.getLogger(BasicCrawler.class);
 
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|bmp|gif|jpe?g" + "|png|tiff?|mid|mp2|mp3|mp4"
@@ -38,8 +37,7 @@ public class BasicCrawler extends MemoryEfficientWebCrawler {
 
     private BlockingQueue<Page> pipeline;
 
-    public BasicCrawler(DeferredDataBufferProvider dataBufferProvider, BlockingQueue<Page> pipeline) {
-        super(dataBufferProvider);
+    public BasicCrawler(BlockingQueue<Page> pipeline) {
         this.pipeline = pipeline;
     }
 
