@@ -27,4 +27,8 @@ public class CustomPageFactoryWebCrawlerFactory<T extends WebCrawler> implements
         crawler.setPageFactory(pageFactory);
         return crawler;
     }
+
+    public PageFactory getPageFactory() {
+        return pageFactory;
+    }
 }

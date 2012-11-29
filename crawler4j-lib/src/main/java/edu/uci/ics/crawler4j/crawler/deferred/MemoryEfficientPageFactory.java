@@ -5,6 +5,8 @@ import edu.uci.ics.crawler4j.fetcher.PageFetchResult;
 import edu.uci.ics.crawler4j.url.WebURL;
 import edu.uci.ics.crawler4j.util.DeferredDataBufferProvider;
 
+import java.io.IOException;
+
 /**
  * Created by Ravn Systems
  * Date: 29/11/12
@@ -15,6 +17,10 @@ import edu.uci.ics.crawler4j.util.DeferredDataBufferProvider;
 public class MemoryEfficientPageFactory implements PageFactory<DeferredPage> {
     private DeferredDataBufferProvider dataBufferProvider;
 
+    public MemoryEfficientPageFactory(String tempPath, int threshold) throws IOException {
+        this.dataBufferProvider = new DeferredDataBufferProvider(tempPath, threshold);
+    }
+
     public MemoryEfficientPageFactory(DeferredDataBufferProvider dataBufferProvider) {
         this.dataBufferProvider = dataBufferProvider;
     }
@@ -23,5 +29,9 @@ public class MemoryEfficientPageFactory implements PageFactory<DeferredPage> {
     public DeferredPage create(WebURL webURL, PageFetchResult result) {
         DeferredPage page = new DeferredPage(webURL, dataBufferProvider.create());
         return page;
+    }
+
+    public void close() {
+        this.dataBufferProvider.exitWhenFinished();
     }
 }

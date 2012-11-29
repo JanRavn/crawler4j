@@ -461,7 +461,7 @@ public class CrawlController extends Configurable {
      * monitor the shutdown flag and when it is set to true, they will no longer
      * process new pages.
      */
-    public void Shutdown() {
+    public void shutdown() {
         logger.info("Shutting down...");
         this.shuttingDown = true;
         frontier.finish();
