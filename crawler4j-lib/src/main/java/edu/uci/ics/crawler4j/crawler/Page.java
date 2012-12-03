@@ -28,6 +28,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * This class contains the data for a fetched and parsed page.
@@ -74,6 +75,12 @@ public class Page {
      * request which was made to retrieve this page.
      */
     protected RequestData requestData = new RequestData();
+
+
+    /**
+     * Last modified date. (if available)
+     */
+    protected Date lastModified = null;
 
 
     public Page(WebURL url) {
@@ -189,5 +196,17 @@ public class Page {
 
     public void setRequestData(RequestData requestData) {
         this.requestData = requestData;
+    }
+
+    /**
+     * Last modified date. (if available)
+     * @return
+     */
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 }

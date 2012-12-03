@@ -20,6 +20,7 @@ package edu.uci.ics.crawler4j.fetcher;
 import com.google.common.collect.Maps;
 import edu.uci.ics.crawler4j.crawler.Page;
 import org.apache.http.HttpEntity;
+import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,12 @@ public class PageFetchResult {
         try {
             page.load(entity);
             page.getRequestData().getHeaders().putAll(headers);
+            if (headers.containsKey("Last-Modified")) {
+                try {
+                    page.setLastModified(DateUtils.parseDate(headers.get("Last-Modified")));
+                } catch (Throwable t) {
+                }
+            }
             return true;
         } catch (Exception e) {
             logger.info("Exception while fetching content for: " + page.getWebURL().getURL() + " [" + e.getMessage()
