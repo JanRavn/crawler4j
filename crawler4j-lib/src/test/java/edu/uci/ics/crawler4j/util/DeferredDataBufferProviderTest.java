@@ -14,8 +14,8 @@ import java.io.File;
 public class DeferredDataBufferProviderTest {
     @Test
     public void testCreate() throws Exception {
-        File temp = File.createTempFile("test_", ".dat", new File("/tmp/crawler/data"));
-        System.out.println(temp.exists());
+//        File temp = File.createTempFile("test_", ".dat", new File("/tmp/crawler/data"));
+//        System.out.println(temp.exists());
     }
 
     @Test

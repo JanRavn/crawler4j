@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class WebCrawler implements Runnable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(DocIDServer.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebCrawler.class);
 
     /**
      * The id associated to the crawler thread running this instance
@@ -234,16 +234,16 @@ public class WebCrawler implements Runnable {
      */
     private boolean shouldVisitInternal(WebURL url) {
         if (myController.getConfig().getMaxDepthOfCrawling() > -1 & url.getDepth() > myController.getConfig().getMaxDepthOfCrawling()) {
-            logger.debug("Rejecting URL, max crawl depth reached: " + url.toString());
+            logger.info("SKIP - {} - Max crawl depth reached", url.toString());
             return false;
         }
 
         if (myController.getConfig().isStayOnDomain() && !domainManager.isInRegistredDomain(url)) {
-            logger.debug("Rejecting URL, not in the same domain: " + url.toString());
+            logger.info("SKIP - {} - Not in the same domain", url.toString());
             return false;
         }
         if (!robotstxtServer.allows(url)) {
-            logger.debug("Rejecting URL, not allowed by the robots.txt: " + url.toString());
+            logger.debug("SKIP - {} - Not allowed by the robots.txt", url.toString());
             return false;
         }
 
@@ -260,7 +260,6 @@ public class WebCrawler implements Runnable {
     }
 
     private void processPage(WebURL curURL) {
-        logger.debug("Processing URL: " + curURL);
         if (curURL == null) {
             return;
         }
@@ -268,33 +267,36 @@ public class WebCrawler implements Runnable {
         try {
             fetchResult = pageFetcher.fetchHeader(curURL);
             int statusCode = fetchResult.getStatusCode();
+            logger.info("FETCHED - {} - {}", statusCode, curURL.getURL());
             handlePageStatusCode(curURL, statusCode, CustomFetchStatus.getStatusDescription(statusCode));
             if (statusCode != HttpStatus.SC_OK) {
                 if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                     if (myController.getConfig().isFollowRedirects()) {
                         String movedToUrl = fetchResult.getMovedToUrl();
                         if (movedToUrl == null) {
+                            logger.info("SKIP - {} - Moved to unknown location", curURL.getURL());
                             return;
                         }
                         int newDocId = docIdServer.getDocId(movedToUrl);
                         if (newDocId > 0) {
+                            logger.info("SKIP - {} - Already visited", curURL.getURL());
                             // Redirect page is already seen
                             return;
-                        } else {
-                            WebURL webURL = new WebURL();
-                            webURL.setURL(movedToUrl);
-                            webURL.setParentDocid(curURL.getParentDocid());
-                            webURL.setParentUrl(curURL.getParentUrl());
-                            webURL.setDepth(curURL.getDepth());
-                            webURL.setDocid(-1);
-                            if (shouldVisitInternal(webURL)) {
-                                webURL.setDocid(docIdServer.getNewDocID(movedToUrl));
-                                frontier.schedule(webURL);
-                            }
+                        }
+
+                        WebURL webURL = new WebURL();
+                        webURL.setURL(movedToUrl);
+                        webURL.setParentDocid(curURL.getParentDocid());
+                        webURL.setParentUrl(curURL.getParentUrl());
+                        webURL.setDepth(curURL.getDepth());
+                        webURL.setDocid(-1);
+                        if (shouldVisitInternal(webURL)) {
+                            webURL.setDocid(docIdServer.getNewDocID(movedToUrl));
+                            frontier.schedule(webURL);
                         }
                     }
                 } else if (fetchResult.getStatusCode() == CustomFetchStatus.PageTooBig) {
-                    logger.info("Skipping a page which was bigger than max allowed size: " + curURL.getURL());
+                    logger.info("SKIP - {} - Too Big", curURL.getURL());
                 }
                 return;
             }
@@ -302,8 +304,10 @@ public class WebCrawler implements Runnable {
             if (!curURL.getURL().equals(fetchResult.getFetchedUrl())) {
                 if (docIdServer.isSeenBefore(fetchResult.getFetchedUrl())) {
                     // Redirect page is already seen
+                    logger.info("SKIP - {} - Redirect page is already seen", curURL.getURL());
                     return;
                 }
+                logger.info("REDIRECT - {} to {}", curURL.getURL(), fetchResult.getFetchedUrl());
                 curURL.setURL(fetchResult.getFetchedUrl());
                 curURL.setDocid(docIdServer.getNewDocID(fetchResult.getFetchedUrl()));
             }
@@ -340,10 +344,11 @@ public class WebCrawler implements Runnable {
                     }
                     frontier.scheduleAll(toSchedule);
                 }
+                logger.info("VISITING - {}", curURL.getURL());
                 visit(page);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("FAILED - {} - {}", curURL.getURL(), e.getMessage());
             logger.error(e.getMessage() + ", while processing: " + curURL.getURL());
         } finally {
             if (fetchResult != null) {
