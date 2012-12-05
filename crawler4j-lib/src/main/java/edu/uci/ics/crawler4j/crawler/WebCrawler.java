@@ -324,6 +324,7 @@ public class WebCrawler implements Runnable {
 
                     List<WebURL> toSchedule = new ArrayList<WebURL>();
                     for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
+                        logger.debug("SCHEDULING: {}", webURL.getURL());
                         webURL.setParentDocid(docid);
                         webURL.setParentUrl(curURL.getURL());
                         int newdocid = docIdServer.getDocId(webURL.getURL());
