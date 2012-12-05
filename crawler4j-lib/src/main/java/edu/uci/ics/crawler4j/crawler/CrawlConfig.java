@@ -128,6 +128,12 @@ public class CrawlConfig {
 	private String proxyPassword = null;
 
     /**
+     * The Proxy Server domain. If set, the authentication method will
+     * switch to NTLM Authentication.
+     */
+    private String proxyDomain = null;
+
+    /**
      * If the crawler should remain on the domain of the provided seeds, this
      * parameters should be set to true.
      */
@@ -147,6 +153,13 @@ public class CrawlConfig {
     * Set this value to null to disable authentication.
     */
     private String password = null;
+
+
+    /**
+     * The NT domain to which the user belongs. If the domain is set, the authentication
+     * method will switch to NTLM authentication.
+     */
+    private String domain = null;
 
 	public CrawlConfig() {
 	}
@@ -406,6 +419,18 @@ public class CrawlConfig {
         return username;
     }
 
+    public String getProxyDomain() {
+        return proxyDomain;
+    }
+
+    /**
+     * The Proxy Server domain. If set, the authentication method will
+     * switch to NTLM Authentication.
+     */
+    public void setProxyDomain(String proxyDomain) {
+        this.proxyDomain = proxyDomain;
+    }
+
     /**
      * If the crawler needs to authenticate during the crawl, a single set
      * of username/password can be provided (with Authentication scope ALL).
@@ -430,6 +455,18 @@ public class CrawlConfig {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    /**
+     * The NT domain to which the user belongs. If the domain is set, the authentication
+     * method will switch to NTLM authentication.
+     */
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     /**
@@ -464,8 +501,10 @@ public class CrawlConfig {
 		sb.append("Proxy port: " + getProxyPort() + "\n");
 		sb.append("Proxy username: " + getProxyUsername() + "\n");
 		sb.append("Proxy password: " + getProxyPassword() + "\n");
+		sb.append("Proxy domain: " + getProxyDomain() + "\n");
 		sb.append("Username: " + getUsername() + "\n");
 		sb.append("Password: " + getPassword() + "\n");
+		sb.append("Domain: " + getDomain() + "\n");
 		return sb.toString();
 	}
 

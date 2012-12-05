@@ -21,17 +21,9 @@ import edu.uci.ics.crawler4j.crawler.Configurable;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.url.URLCanonicalizer;
 import edu.uci.ics.crawler4j.url.WebURL;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
+import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -43,11 +35,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParamBean;
+import org.apache.http.params.*;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,12 +89,23 @@ public class PageFetcher extends Configurable {
         connectionManager.setDefaultMaxPerRoute(config.getMaxConnectionsPerHost());
         httpClient = new DefaultHttpClient(connectionManager, params);
 
+        // Set proxy details
         if (config.getProxyHost() != null) {
-
+            String password = config.getProxyPassword() != null ? config.getProxyPassword() : "";
+            // Set Proxy authentication if provided.
             if (config.getProxyUsername() != null) {
-                httpClient.getCredentialsProvider().setCredentials(
-                        new AuthScope(config.getProxyHost(), config.getProxyPort()),
-                        new UsernamePasswordCredentials(config.getProxyUsername(), config.getProxyPassword()));
+
+                // Set Proxy authentication to NTLM if provided
+                if (config.getProxyDomain() != null) {
+                    httpClient.getCredentialsProvider().setCredentials(
+                            new AuthScope(config.getProxyHost(), config.getProxyPort(), AuthScope.ANY_REALM, "ntlm"),
+                            new NTCredentials(config.getProxyUsername(), password, "127.0.0.1", config.getProxyDomain()));
+                } else {
+                    httpClient.getCredentialsProvider().setCredentials(
+                            new AuthScope(config.getProxyHost(), config.getProxyPort()),
+                            new UsernamePasswordCredentials(config.getProxyUsername(), password));
+                }
+
             }
 
             HttpHost proxy = new HttpHost(config.getProxyHost(), config.getProxyPort());
@@ -114,13 +113,19 @@ public class PageFetcher extends Configurable {
         }
 
         if (config.getUsername() != null) {
-            String password = config.getPassword() == null ? "" : config.getPassword();
-            Credentials credentials = new UsernamePasswordCredentials(config.getUsername(), password);
+            String password = config.getPassword() != null ? config.getPassword() : "";
+            // Set to NTLM authentication if domain is provided
+            if (config.getDomain() != null) {
+                httpClient.getCredentialsProvider().setCredentials(
+                        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, "ntlm"),
+                        new NTCredentials(config.getUsername(), password, "127.0.0.1", config.getDomain()));
+            } else {
+                httpClient.getCredentialsProvider().setCredentials(
+                        AuthScope.ANY,
+                        new UsernamePasswordCredentials(config.getUsername(), password));
+            }
 
-            httpClient.getCredentialsProvider().setCredentials(
-                    AuthScope.ANY,
-                    credentials
-            );
+
         }
 
         httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
