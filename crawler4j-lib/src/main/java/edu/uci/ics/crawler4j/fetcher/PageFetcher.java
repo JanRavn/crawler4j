@@ -40,8 +40,15 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
@@ -81,7 +88,7 @@ public class PageFetcher extends Configurable {
         schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
         if (config.isIncludeHttpsPages()) {
-            schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+            schemeRegistry.register(new Scheme("https", 443, new SSLSocketFactory(getSSLContext())));
         }
 
         connectionManager = new PoolingClientConnectionManager(schemeRegistry);
@@ -253,6 +260,34 @@ public class PageFetcher extends Configurable {
         }
         fetchResult.setStatusCode(CustomFetchStatus.UnknownError);
         return fetchResult;
+    }
+
+    /**
+     * SSL Context which accepts any certificate.
+     * @return
+     */
+    private SSLContext getSSLContext() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs,
+                                               String authType) {
+                }
+            }}, new SecureRandom());
+            return sslContext;
+        } catch (KeyManagementException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+        return null;
     }
 
     public synchronized void shutDown() {
