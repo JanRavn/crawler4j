@@ -21,7 +21,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.util.List;
 
-public class HtmlParseData implements ParseData {
+public class HtmlParseData implements ParseData, OutgoingUrlData {
 
 	private String html;
 	private String text;
@@ -53,6 +53,7 @@ public class HtmlParseData implements ParseData {
 		this.title = title;
 	}
 
+    @Override
 	public List<WebURL> getOutgoingUrls() {
 		return outgoingUrls;
 	}

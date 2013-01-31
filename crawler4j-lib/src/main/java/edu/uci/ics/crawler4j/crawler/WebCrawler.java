@@ -22,7 +22,7 @@ import edu.uci.ics.crawler4j.fetcher.PageFetchResult;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.DocIDServer;
 import edu.uci.ics.crawler4j.frontier.Frontier;
-import edu.uci.ics.crawler4j.parser.HtmlParseData;
+import edu.uci.ics.crawler4j.parser.OutgoingUrlData;
 import edu.uci.ics.crawler4j.parser.ParseData;
 import edu.uci.ics.crawler4j.parser.Parser;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
@@ -319,11 +319,11 @@ public class WebCrawler implements Runnable {
 
             if (fetchResult.fetchContent(page) && parser.parse(page, curURL.getURL())) {
                 ParseData parseData = page.getParseData();
-                if (parseData instanceof HtmlParseData) {
-                    HtmlParseData htmlParseData = (HtmlParseData) parseData;
+                if (parseData instanceof OutgoingUrlData) {
+                    OutgoingUrlData outgoingUrlData = (OutgoingUrlData)parseData;
 
                     List<WebURL> toSchedule = new ArrayList<WebURL>();
-                    for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
+                    for (WebURL webURL : outgoingUrlData.getOutgoingUrls()) {
                         logger.debug("SCHEDULING: {}", webURL.getURL());
                         webURL.setParentDocid(docid);
                         webURL.setParentUrl(curURL.getURL());

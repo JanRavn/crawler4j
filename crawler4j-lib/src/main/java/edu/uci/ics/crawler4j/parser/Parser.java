@@ -27,6 +27,9 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.parser.xml.XMLParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +40,8 @@ import java.util.List;
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
  */
 public class Parser extends Configurable {
+
+    protected final static Logger logger = LoggerFactory.getLogger(Parser.class);
 
     private HtmlParser htmlParser;
     private ParseContext parseContext;
@@ -49,39 +54,46 @@ public class Parser extends Configurable {
 
     public boolean parse(Page page, String contextURL) {
 
-        if (Util.hasBinaryContent(page.getContentType())) {
-            if (!config.isIncludeBinaryContentInCrawling()) {
-                return false;
-            } else {
-                page.setParseData(BinaryParseData.getInstance());
-                return true;
-            }
-        } else if (Util.hasPlainTextContent(page.getContentType())) {
+        if (Util.hasPlainTextContent(page.getContentType())) {
             try {
                 TextParseData parseData = new TextParseData();
                 parseData.setTextContent(Util.toString(page.getContentDataStream(), page.getContentCharset()));
                 page.setParseData(parseData);
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error parsing text content: {}", contextURL, e);
             }
             return false;
         }
+        else if (Util.hasXMLContent(page.getContentType())) {
+            return parseXml(page, contextURL);
+        }
+        else if (Util.hasBinaryContent(page.getContentType())) {
+            if (!config.isIncludeBinaryContentInCrawling()) {
+                return false;
+            } else {
+                page.setParseData(BinaryParseData.getInstance());
+                return true;
+            }
+        }
 
+        return parseHtml(page, contextURL);
+    }
+
+    private boolean parseHtml(Page page, String contextURL) {
         Metadata metadata = new Metadata();
         HtmlContentHandler contentHandler = new HtmlContentHandler();
         InputStream inputStream = null;
         try {
             htmlParser.parse(page.getContentDataStream(), contentHandler, metadata, parseContext);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing HTML content: {}", contextURL, e);
         } finally {
             try {
                 if (inputStream != null) {
                     inputStream.close();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
 
@@ -93,15 +105,38 @@ public class Parser extends Configurable {
         parseData.setText(contentHandler.getBodyText().trim());
         parseData.setTitle(metadata.get(TikaCoreProperties.TITLE.getName()));
 
-        List<WebURL> outgoingUrls = new ArrayList<WebURL>();
-
         String baseURL = contentHandler.getBaseUrl();
         if (baseURL != null) {
             contextURL = baseURL;
         }
 
+        parseData.setOutgoingUrls(getOutgoingUrls(contentHandler.getOutgoingUrls(), contextURL));
+        parseData.setHtml(Util.toString(page.getContentDataStream(), page.getContentCharset()));
+        page.setParseData(parseData);
+        return true;
+    }
+
+    private boolean parseXml(Page page, String contextURL) {
+        try {
+            XmlParseData parseData = new XmlParseData();
+            XMLParser xmlParser = new XMLParser();
+            Metadata metadata = new Metadata();
+            XmlContentHandler contentHandler = new XmlContentHandler();
+            xmlParser.parse(page.getContentDataStream(), contentHandler, metadata, parseContext);
+            parseData.setOutgoingUrls(getOutgoingUrls(contentHandler.getOutgoingUrls(), contextURL));
+            page.setParseData(parseData);
+            return true;
+        }
+        catch (Exception e) {
+            logger.error("Error parsing XML content: {}", contextURL, e);
+        }
+        return false;
+    }
+
+    private List<WebURL> getOutgoingUrls(List<ExtractedUrlAnchorPair> urlAnchorPairs, String contextURL) {
+        List<WebURL> outgoingUrls = new ArrayList<WebURL>();
         int urlCount = 0;
-        for (ExtractedUrlAnchorPair urlAnchorPair : contentHandler.getOutgoingUrls()) {
+        for (ExtractedUrlAnchorPair urlAnchorPair : urlAnchorPairs) {
             String href = urlAnchorPair.getHref();
             href = href.trim();
             if (href.length() == 0) {
@@ -125,12 +160,7 @@ public class Parser extends Configurable {
                 }
             }
         }
-
-        parseData.setOutgoingUrls(outgoingUrls);
-        parseData.setHtml(Util.toString(page.getContentDataStream(), page.getContentCharset()));
-        page.setParseData(parseData);
-        return true;
-
+        return outgoingUrls;
     }
 
 }
