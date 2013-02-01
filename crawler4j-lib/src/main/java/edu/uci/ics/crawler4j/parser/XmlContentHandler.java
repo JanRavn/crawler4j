@@ -22,8 +22,8 @@ public class XmlContentHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if (length > 4 && Character.toLowerCase(ch[0]) == 'h' && Character.toLowerCase(ch[1]) == 't'
-                && Character.toLowerCase(ch[2]) == 't' && Character.toLowerCase(ch[3]) == 'p') {
+        if (length > 4 && Character.toLowerCase(ch[start]) == 'h' && Character.toLowerCase(ch[start+1]) == 't'
+                && Character.toLowerCase(ch[start+2]) == 't' && Character.toLowerCase(ch[start+3]) == 'p') {
             String url = new String(ch, start, length);
             ExtractedUrlAnchorPair curUrl = new ExtractedUrlAnchorPair();
             curUrl.setHref(url);
