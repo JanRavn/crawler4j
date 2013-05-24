@@ -54,7 +54,12 @@ public class DeferredDataBufferProvider {
         if (!tempPath.exists()) {
             tempPath.mkdirs();
         } else if (tempPath.exists() && tempPath.isDirectory()) {
-            FileUtils.cleanDirectory(tempPath);
+            // Clear if it works. but do not abort in case it does not
+            try {
+                FileUtils.cleanDirectory(tempPath);
+            } catch (Exception e) {
+
+            }
         } else if (tempPath.exists() && !tempPath.isDirectory()) {
             throw new IOException("Provided temporary path exists, but is not a directory");
         }
@@ -65,6 +70,7 @@ public class DeferredDataBufferProvider {
         File tempFile;
         try {
             tempFile = getTempFile();
+            tempFile.deleteOnExit();
         } catch (IOException e) {
             throw new RuntimeException("Could not create a temporary file for the DeferredDataBuffer", e);
         }
