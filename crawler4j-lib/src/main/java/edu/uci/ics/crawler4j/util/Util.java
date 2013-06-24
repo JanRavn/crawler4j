@@ -81,6 +81,16 @@ public class Util {
         return false;
     }
 
+    public static boolean hasXMLContent(String contentType) {
+        if (contentType != null) {
+            String typeStr = contentType.toLowerCase();
+            if (typeStr.contains("text/xml") || typeStr.contains("application/xml")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean hasPlainTextContent(String contentType) {
         if (contentType != null) {
             String typeStr = contentType.toLowerCase();

@@ -1,3 +1,9 @@
+package edu.uci.ics.crawler4j.parser;
+
+import edu.uci.ics.crawler4j.url.WebURL;
+
+import java.util.List;
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,56 +21,33 @@
  * limitations under the License.
  */
 
-package edu.uci.ics.crawler4j.parser;
+public class XmlParseData implements ParseData, OutgoingUrlData {
 
-import edu.uci.ics.crawler4j.url.WebURL;
+    private String xml;
 
-import java.util.List;
+    private List<WebURL> outgoingUrls;
 
-public class HtmlParseData implements ParseData, OutgoingUrlData {
+    public String getXml() {
+        return xml;
+    }
 
-	private String html;
-	private String text;
-	private String title;
-
-	private List<WebURL> outgoingUrls;
-
-	public String getHtml() {
-		return html;
-	}
-
-	public void setHtml(String html) {
-		this.html = html;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setXml(String xml) {
+        this.xml = xml;
+    }
 
     @Override
-	public List<WebURL> getOutgoingUrls() {
-		return outgoingUrls;
-	}
+    public List<WebURL> getOutgoingUrls() {
+        return outgoingUrls;
+    }
 
-	public void setOutgoingUrls(List<WebURL> outgoingUrls) {
-		this.outgoingUrls = outgoingUrls;
-	}
-	
-	@Override
-	public String toString() {
-		return text;
-	}
+    public void setOutgoingUrls(List<WebURL> outgoingUrls) {
+        this.outgoingUrls = outgoingUrls;
+    }
+
+    @Override
+    public String toString() {
+        return xml;
+    }
 
 }
+
