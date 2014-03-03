@@ -19,9 +19,18 @@ package edu.uci.ics.crawler4j.fetcher;
 
 import edu.uci.ics.crawler4j.crawler.Configurable;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+import edu.uci.ics.crawler4j.fetcher.ssl.SslContextBuilder;
 import edu.uci.ics.crawler4j.url.URLCanonicalizer;
 import edu.uci.ics.crawler4j.url.WebURL;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -35,12 +44,17 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.*;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParamBean;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
@@ -88,7 +102,7 @@ public class PageFetcher extends Configurable {
         schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
         if (config.isIncludeHttpsPages()) {
-            schemeRegistry.register(new Scheme("https", 443, new SSLSocketFactory(getSSLContext())));
+            schemeRegistry.register(new Scheme("https", 443, new SSLSocketFactory(getSSLContext(config))));
         }
 
         connectionManager = new PoolingClientConnectionManager(schemeRegistry);
@@ -264,9 +278,10 @@ public class PageFetcher extends Configurable {
 
     /**
      * SSL Context which accepts any certificate.
+     *
      * @return
      */
-    private SSLContext getSSLContext() {
+    static SSLContext getSSLContext() {
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[]{new X509TrustManager() {
@@ -286,6 +301,26 @@ public class PageFetcher extends Configurable {
 
         } catch (NoSuchAlgorithmException e) {
 
+        }
+        return null;
+    }
+
+    static SSLContext getSSLContext(final CrawlConfig config) {
+        try {
+            return SslContextBuilder.create()
+                    .keyStorePath(config.getKeyStorePath())
+                    .keyStorePass(config.getKeyStorePass())
+                    .keyStoreType(config.getKeyStoreType())
+                    .keyPass(config.getKeyPass())
+                    .trustStorePath(config.getTrustStorePath())
+                    .trustStorePass(config.getTrustStorePass())
+                    .trustStoreType(config.getTrustStoreType())
+                    .trustAllCerts(config.isTrustAll())
+                    .trustSelfSignedCerts(config.isTrustSelfSigned())
+                    .useTLS()
+                    .build();
+        } catch (SSLException e) {
+            logger.error("Could not create the SSL Context.", e);
         }
         return null;
     }
