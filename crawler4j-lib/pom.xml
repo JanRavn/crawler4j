@@ -3,13 +3,13 @@
     <parent>
         <artifactId>crawler4j-parent</artifactId>
         <groupId>edu.uci.ics</groupId>
-        <version>3.8.0</version>
+        <version>3.9.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>edu.uci.ics</groupId>
     <artifactId>crawler4j-lib</artifactId>
-    <version>3.8.0</version>
+    <version>3.9.0-SNAPSHOT</version>
     <name>crawler4j Lib</name>
 
     <build>
