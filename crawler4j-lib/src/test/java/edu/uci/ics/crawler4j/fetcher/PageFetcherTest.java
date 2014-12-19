@@ -1,6 +1,7 @@
 package edu.uci.ics.crawler4j.fetcher;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,6 +12,8 @@ import javax.net.ssl.SSLContext;
  * Created by janvh on 03/03/14.
  */
 public class PageFetcherTest {
+
+    @Ignore
     @Test
     public void testGetSSLContext() throws Exception {
         CrawlConfig config = new CrawlConfig();
@@ -29,6 +32,7 @@ public class PageFetcherTest {
         assertNotNull(context);
     }
 
+    @Ignore
     @Test
     public void testGetSSLContextNullPassword() throws Exception {
         CrawlConfig config = new CrawlConfig();
