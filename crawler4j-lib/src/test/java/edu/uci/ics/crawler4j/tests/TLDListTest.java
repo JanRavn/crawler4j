@@ -29,6 +29,16 @@ public class TLDListTest {
     }
 
     @Test
+    public void testNoDomain() {
+        assertEquals("", TLDList.domain("intranet"));
+    }
+
+    @Test
+    public void testInternalDomain() {
+        assertEquals("local", TLDList.domain("intranet.local"));
+    }
+
+    @Test
     public void testNull() {
         /// Not @Nullable => NullPointerException expected
         try {
