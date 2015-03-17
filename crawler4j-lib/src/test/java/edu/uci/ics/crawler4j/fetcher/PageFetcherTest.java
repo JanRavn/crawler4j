@@ -11,6 +11,7 @@ import javax.net.ssl.SSLContext;
 /**
  * Created by janvh on 03/03/14.
  */
+@Ignore
 public class PageFetcherTest {
 
     @Ignore
