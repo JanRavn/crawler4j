@@ -94,14 +94,23 @@ public class WebURL implements Serializable {
 
         int domainStartIdx = url.indexOf("//") + 2;
         int domainEndIdx = url.indexOf('/', domainStartIdx);
-        if (domainEndIdx < 0) {
-            domainEndIdx = url.length();
+        domain = url.substring(domainStartIdx, domainEndIdx);
+        subDomain = "";
+        String[] parts = domain.split("\\.");
+        if (parts.length > 2) {
+            domain = parts[parts.length - 2] + "." + parts[parts.length - 1];
+            int limit = 2;
+            if (TLDList.contains(domain)) {
+                domain = parts[parts.length - 3] + "." + domain;
+                limit = 3;
+            }
+            for (int i = 0; i < parts.length - limit; i++) {
+                if (subDomain.length() > 0) {
+                    subDomain += ".";
+                }
+                subDomain += parts[i];
+            }
         }
-        String host = url.substring(domainStartIdx, domainEndIdx);
-
-        // Split url in subdomain / domain
-        domain = TLDList.domain(host);
-        subDomain = (domain.length() == host.length() ? "" : host.substring(0, host.length() - domain.length() - 1));
         path = url.substring(domainEndIdx);
         int pathEndIdx = path.indexOf('?');
         if (pathEndIdx >= 0) {
