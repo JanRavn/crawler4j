@@ -4,7 +4,7 @@
     <artifactId>crawler4j-parent</artifactId>
     <packaging>pom</packaging>
     <name>crawler4j</name>
-    <version>3.9.2-SNAPSHOT</version>
+    <version>3.9.2</version>
     <description>Open Source Web Crawler for Java</description>
     <url>http://code.google.com/p/crawler4j/</url>
     <licenses>
